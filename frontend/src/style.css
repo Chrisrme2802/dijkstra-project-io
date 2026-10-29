@@ -1,222 +1,278 @@
-  @import "tailwindcss";
+@import "tailwindcss";
 
-  @theme {
-    --color-brand-primary: #6366f1;
-    --color-brand-secondary: #06b6d4;
-    --color-node-default: #1e293b;
-    --color-node-visited: #f59e0b;
-    --color-node-active: #10b981;
-    --color-edge-default: #334155;
-    --color-edge-active: #10b981;
-  }
+/* =====================================================================
+   1. TOKENS DE DISEÑO
+   Todos los colores del grafo salen de aquí. Para cambiar la paleta,
+   edita solo este bloque. (`static` fuerza a emitir las variables
+   aunque Tailwind no detecte su uso.)
+   ===================================================================== */
+@theme static {
+  --color-brand-primary: #6366f1;
+  --color-brand-accent: #818cf8;
 
-  /* nodos */
-  .node-default circle {
-    fill: #0f172a;
-    stroke: #475569;
-    stroke-width: 2px;
-    transition: all 0.2s ease;
-  }
+  --color-graph-node-fill: #0f172a;
+  --color-graph-stroke: #475569;
+  --color-graph-weight: #94a3b8;
 
-  .node-default:hover circle {
-    stroke: #818cf8;
-  }
-
-  .node-start circle {
-    fill: rgba(245, 158, 11, 0.15);
-    stroke: #f59e0b;
-    stroke-width: 3px;
-    filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.8));
-  }
-
-  .node-target circle {
-    fill: rgba(16, 185, 129, 0.15);
-    stroke: #10b981;
-    stroke-width: 3px;
-    filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.8));
-  }
-
-  /* papelera */
-  #trash-zone.trash-visible {
-    opacity: 0.9;
-    border-color: rgba(239, 68, 68, 0.4);
-    color: #f87171;
-  }
-
-  #trash-zone.trash-active {
-    opacity: 1;
-    background-color: rgba(239, 68, 68, 0.2);
-    border-color: #ef4444;
-    color: #ef4444;
-    transform: scale(1.1);
-    filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.6));
-  } 
-
-  /* Edges */
-  .temp-edge-line {
-    stroke: #818cf8;
-    stroke-width: 2px;
-    stroke-dasharray: 4 4;
-    pointer-events: none;
-  }
-
-  .temp-edge-marker {
-    fill: #818cf8;
-  }
-
-  .edge-line {
-    stroke: #475569;
-    stroke-width: 2px;
-    transition: stroke 0.2s ease;
-  }
-
-  .edge-line:hover {
-    stroke: #818cf8;
-  }
-
-  /* punta flecha */
-  .edge-marker {
-    fill: #475569;
-  }
-
-  /* peso */
-  .edge-weight {
-    fill: #94a3b8;
-    font-size: 12px;
-    font-weight: 700;
-    user-select: none;
-  }
-
-  /* proceso de nodos */
-  .node-processing circle {
-    fill: #8b5cf6;
-    stroke: #a78bfa;
-    stroke-width: 3px;
-    filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.8));
-  }
-
-  .node-visited circle {
-    fill: #1e1b4b;
-    stroke: #6366f1;
-    stroke-width: 2px;
-  }
-
-  .edge-active {
-    stroke: #38bdf8 !important;
-    stroke-width: 3px !important;
-  }
-
-  .edge-line.edge-path {
-    stroke: #10b981 !important;
-    stroke-width: 4px !important;
-  }
-
-  .path-edge-marker {
-    fill: #10b981;
-  }
-
-  /* alertas, textos, etc */
-  .modal-overlay {
-    @apply fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200;
-  }
-
-  .modal-overlay.modal-visible {
-    @apply opacity-100 pointer-events-auto;
-  }
-
-  .modal-card {
-    @apply bg-slate-900 border border-slate-800 rounded-2xl p-6 w-80 shadow-2xl shadow-indigo-500/10 flex flex-col gap-4 transform scale-95 transition-transform duration-200;
-  }
-
-  .modal-overlay.modal-visible .modal-card {
-    @apply scale-100;
-  }
-
-  .modal-input-field {
-    @apply w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono transition;
-  }
-
-  #toast-container {
-    @apply fixed top-20 right-6 z-50 flex flex-col gap-2 pointer-events-none;
-  }
-
-  .toast-item {
-    @apply pointer-events-auto px-4 py-2.5 rounded-xl border backdrop-blur-md text-xs font-semibold shadow-xl flex items-center gap-2 transform translate-x-10 opacity-0 transition-all duration-300;
-  }
-
-  .toast-item.toast-show {
-    @apply translate-x-0 opacity-100;
-  }
-
-  .toast-info {
-    @apply bg-indigo-950/90 border-indigo-500/40 text-indigo-200 shadow-indigo-500/10;
-  }
-
-  .toast-error {
-    @apply bg-rose-950/90 border-rose-500/40 text-rose-200 shadow-rose-500/10;
-  }
-
-.toast-success {
-  @apply bg-emerald-950/90 border-emerald-500/40 text-emerald-200 shadow-emerald-500/10;
+  --color-state-start: #f59e0b;
+  --color-state-target: #10b981;
+  --color-state-processing: #8b5cf6;
+  --color-state-processing-light: #a78bfa;
+  --color-state-visited-fill: #1e1b4b;
+  --color-state-active: #38bdf8;
+  --color-state-path: #10b981;
+  --color-state-danger: #ef4444;
 }
 
-/* Seleccion feature */
+/* =====================================================================
+   2. NODOS
+   Estados posibles (clases que pone render/graph-renderer.ts):
+   node-default · node-start · node-target · node-processing ·
+   node-visited · node-selected (se suma a cualquiera de los anteriores)
+   ===================================================================== */
+.node-label {
+  @apply fill-slate-200 text-xs font-bold pointer-events-none;
+}
+
+.node-default circle {
+  fill: var(--color-graph-node-fill);
+  stroke: var(--color-graph-stroke);
+  stroke-width: 2px;
+  transition: all 0.2s ease;
+}
+
+.node-default:hover circle {
+  stroke: var(--color-brand-accent);
+}
+
+.node-start circle {
+  fill: color-mix(in srgb, var(--color-state-start) 15%, transparent);
+  stroke: var(--color-state-start);
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-state-start) 80%, transparent));
+}
+
+.node-target circle {
+  fill: color-mix(in srgb, var(--color-state-target) 15%, transparent);
+  stroke: var(--color-state-target);
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-state-target) 80%, transparent));
+}
+
+.node-visited circle {
+  fill: var(--color-state-visited-fill);
+  stroke: var(--color-brand-primary);
+  stroke-width: 2px;
+}
+
+.node-processing circle {
+  fill: var(--color-state-processing);
+  stroke: var(--color-state-processing-light);
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-state-processing) 80%, transparent));
+}
+
+/* La selección debe ganar a cualquier estado: mayor especificidad, sin !important */
+.node-group.node-selected circle {
+  stroke: var(--color-state-active);
+  stroke-width: 3.5px;
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-state-active) 90%, transparent));
+}
+
+/* =====================================================================
+   3. ARISTAS
+   El orden importa: :hover primero; los estados después, para que
+   "activa" y "ruta" ganen sobre el hover.
+   ===================================================================== */
+.edge-line {
+  stroke: var(--color-graph-stroke);
+  stroke-width: 2px;
+  transition: stroke 0.2s ease;
+}
+
+.edge-line:hover {
+  stroke: var(--color-brand-accent);
+}
+
+.edge-line.edge-active {
+  stroke: var(--color-state-active);
+  stroke-width: 3px;
+}
+
+.edge-line.edge-path {
+  stroke: var(--color-state-path);
+  stroke-width: 4px;
+}
+
+.edge-marker {
+  fill: var(--color-graph-stroke);
+}
+
+.path-edge-marker {
+  fill: var(--color-state-path);
+}
+
+.edge-weight {
+  fill: var(--color-graph-weight);
+  font-size: 12px;
+  font-weight: 700;
+  user-select: none;
+}
+
+/* Línea temporal al crear una arista con Shift + arrastrar */
+.temp-edge-line {
+  stroke: var(--color-brand-accent);
+  stroke-width: 2px;
+  stroke-dasharray: 4 4;
+  pointer-events: none;
+}
+
+.temp-edge-marker {
+  fill: var(--color-brand-accent);
+}
+
+/* =====================================================================
+   4. SELECCIÓN Y PAPELERA
+   ===================================================================== */
 .selection-box {
-  fill: rgba(99, 102, 241, 0.15);
-  stroke: #818cf8;
+  fill: color-mix(in srgb, var(--color-brand-primary) 15%, transparent);
+  stroke: var(--color-brand-accent);
   stroke-width: 1.5px;
   stroke-dasharray: 4 4;
   pointer-events: none;
 }
 
-.node-selected circle {
-  stroke: #38bdf8 !important;
-  stroke-width: 3.5px !important;
-  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.9)) !important;
+#trash-zone.trash-visible {
+  opacity: 0.9;
+  border-color: color-mix(in srgb, var(--color-state-danger) 40%, transparent);
+  color: #f87171;
 }
 
-/* Estados del indicador superior */
-.status-editing {
-  @apply text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono transition-all;
+#trash-zone.trash-active {
+  opacity: 1;
+  background-color: color-mix(in srgb, var(--color-state-danger) 20%, transparent);
+  border-color: var(--color-state-danger);
+  color: var(--color-state-danger);
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--color-state-danger) 60%, transparent));
+}
+
+/* =====================================================================
+   5. MODAL (ui/modal.ts)
+   ===================================================================== */
+.modal-overlay {
+  @apply fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200;
+}
+
+.modal-overlay.modal-visible {
+  @apply opacity-100 pointer-events-auto;
+}
+
+.modal-card {
+  @apply bg-slate-900 border border-slate-800 rounded-2xl p-6 w-80 shadow-2xl shadow-indigo-500/10 flex flex-col gap-4 transform scale-95 transition-transform duration-200;
+}
+
+.modal-overlay.modal-visible .modal-card {
+  @apply scale-100;
+}
+
+.modal-input-field {
+  @apply w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono transition;
+}
+
+/* =====================================================================
+   6. TOASTS (ui/toast.ts)
+   ===================================================================== */
+#toast-container {
+  @apply fixed top-20 right-6 z-50 flex flex-col gap-2 pointer-events-none;
+}
+
+.toast-item {
+  @apply pointer-events-auto px-4 py-2.5 rounded-xl border backdrop-blur-md text-xs font-semibold shadow-xl flex items-center gap-2 transform translate-x-10 opacity-0 transition-all duration-300;
+}
+
+.toast-item.toast-show {
+  @apply translate-x-0 opacity-100;
+}
+
+.toast-info {
+  @apply bg-indigo-950/90 border-indigo-500/40 text-indigo-200 shadow-indigo-500/10;
+}
+
+.toast-error {
+  @apply bg-rose-950/90 border-rose-500/40 text-rose-200 shadow-rose-500/10;
+}
+
+.toast-success {
+  @apply bg-emerald-950/90 border-emerald-500/40 text-emerald-200 shadow-emerald-500/10;
+}
+
+/* =====================================================================
+   7. INDICADOR DE ESTADO (ui/playback-controls.ts)
+   ===================================================================== */
+.status-editing,
+.status-running,
+.status-paused,
+.status-completed {
+  @apply text-xs px-2.5 py-1 rounded-full border font-mono transition-all;
+}
+
+.status-editing,
+.status-completed {
+  @apply bg-emerald-500/10 text-emerald-400 border-emerald-500/20;
 }
 
 .status-running {
-  @apply text-xs px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-mono transition-all;
+  @apply bg-indigo-500/10 text-indigo-400 border-indigo-500/20;
 }
 
 .status-paused {
-  @apply text-xs px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono transition-all;
+  @apply bg-amber-500/10 text-amber-400 border-amber-500/20;
 }
 
-.status-completed {
-  @apply text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono transition-all;
-}
-
-/* clases para filas de tabla */
+/* =====================================================================
+   8. TABLA DE DISTANCIAS (ui/distance-table.ts)
+   ===================================================================== */
 .table-row-base {
   @apply transition-colors duration-200 hover:bg-slate-800/50;
 }
+
 .table-row-current {
   @apply bg-indigo-900/40 border-l-2 border-indigo-400;
 }
+
 .table-row-visited {
   @apply text-slate-500;
 }
-.table-dist-infinity {
-  @apply text-slate-600 font-serif text-lg;
-}
-.table-dist-value {
-  @apply text-indigo-300 font-bold;
-}
+
 .table-cell-node {
-  @apply px-2.5 py-1.5 flex items-center gap-2 font-bold;
+  @apply px-2.5 py-1.5 font-bold;
 }
+
+.table-node-inner {
+  @apply flex items-center gap-2;
+}
+
 .table-cell-dist {
   @apply px-2.5 py-1.5;
 }
+
 .table-cell-prev {
   @apply px-2.5 py-1.5 text-slate-500;
 }
+
+.table-dist-infinity {
+  @apply text-slate-600 font-serif text-lg;
+}
+
+.table-dist-value {
+  @apply text-indigo-300 font-bold;
+}
+
+.table-empty-cell {
+  @apply px-2.5 py-3 text-center text-slate-600;
+}
+
 .pulse-dot {
   @apply w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse shadow-[0_0_8px_rgba(129,140,248,0.8)];
 }

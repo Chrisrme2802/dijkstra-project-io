@@ -1,14 +1,5 @@
-export interface GraphNode extends Node {
-  x: number;
-  y: number;
-  selected?: boolean;
-}
+// mantener sincronizado con backend
 
-export interface GraphEdge extends Edge {
-  id: string;
-}
-
-// Las mismas del backend
 export interface Node {
   id: string;
   label?: string;
@@ -27,18 +18,34 @@ export interface DijkstraRequest {
   targetNode: string;
 }
 
+export interface ActiveEdge {
+  from: string;
+  to: string;
+}
+
 export interface Step {
   stepNumber: number;
   currentNode: string;
-  distances: Record<string, number>;
+  distances: Record<string, number | null>;
   previous: Record<string, string | null>;
   visited: string[];
   description: string;
-  activeEdge?: { from: string; to: string };
+  activeEdge?: ActiveEdge;
 }
 
 export interface DijkstraResponse {
   path: string[];
-  totalDistance: number;
+  totalDistance: number | null;
   steps: Step[];
+}
+
+// frontend
+export interface GraphNode extends Node {
+  x: number;
+  y: number;
+  selected?: boolean;
+}
+
+export interface GraphEdge extends Edge {
+  id: string;
 }

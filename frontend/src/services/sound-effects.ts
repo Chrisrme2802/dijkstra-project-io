@@ -1,113 +1,86 @@
+interface ToneOptions {
+  type: OscillatorType;
+  /** Frecuencia inicial (Hz). */
+  from: number;
+  /** Frecuencia final (Hz); si se omite, la frecuencia es constante. */
+  to?: number;
+  /** Duración en segundos. */
+  duration: number;
+  volume: number;
+  /** Retraso de inicio en segundos. */
+  delay?: number;
+}
+
+/** Efectos de sonido sintetizados con la Web Audio API (no se usan archivos de audio). */
 export class SoundEffects {
   private ctx: AudioContext | null = null;
-  private enabled: boolean = true;
+  private enabled = true;
 
   constructor() {
-    // lazy de audioContext en primer click
-    const initAudio = () => {
+    // Los navegadores exigen un gesto del usuario para iniciar el audio.
+    const init = () => {
       if (!this.ctx) {
-        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-        this.ctx = new AudioCtx();
+        const Ctor =
+          window.AudioContext ||
+          (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        if (!Ctor) return;
+        this.ctx = new Ctor();
       }
-      if (this.ctx.state === 'suspended') {
-        this.ctx.resume();
-      }
-      window.removeEventListener('click', initAudio);
+      if (this.ctx.state === 'suspended') void this.ctx.resume();
+      window.removeEventListener('click', init);
+      window.removeEventListener('keydown', init);
     };
-
-    window.addEventListener('click', initAudio);
+    window.addEventListener('click', init);
+    window.addEventListener('keydown', init);
   }
 
   public toggleSound(enable?: boolean): boolean {
-    this.enabled = enable !== undefined ? enable : !this.enabled;
+    this.enabled = enable ?? !this.enabled;
     return this.enabled;
   }
 
-  // pop suave
+  /** Pop suave (crear, renombrar, copiar). */
   public playPop(): void {
-    if (!this.enabled || !this.ctx) return;
-
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(440, this.ctx.currentTime); // A4
-    osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.08); // Rampa rápida hacia A5
-
-    gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start();
-    osc.stop(this.ctx.currentTime + 0.08);
+    this.tone({ type: 'sine', from: 440, to: 880, duration: 0.08, volume: 0.15 });
   }
 
-  // tick para steps
+  /** Tick corto en cada paso del algoritmo. */
   public playStep(): void {
-    if (!this.enabled || !this.ctx) return;
-
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(587.33, this.ctx.currentTime); // D5
-
-    gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.05);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start();
-    osc.stop(this.ctx.currentTime + 0.05);
+    this.tone({ type: 'triangle', from: 587.33, duration: 0.05, volume: 0.08 });
   }
 
-  // exito
+  /** Arpegio ascendente C5 – E5 – G5 – C6. */
   public playSuccess(): void {
-    if (!this.enabled || !this.ctx) return;
-
-    const notes = [523.25, 659.25, 783.99, 1046.5]; // Arpegio C5 - E5 - G5 - C6
-    notes.forEach((freq, index) => {
-      if (!this.ctx) return;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-
-      const startTime = this.ctx.currentTime + index * 0.08;
-
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, startTime);
-
-      gain.gain.setValueAtTime(0.12, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.3);
-
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-
-      osc.start(startTime);
-      osc.stop(startTime + 0.3);
-    });
+    [523.25, 659.25, 783.99, 1046.5].forEach((from, i) =>
+      this.tone({ type: 'sine', from, duration: 0.3, volume: 0.12, delay: i * 0.08 })
+    );
   }
 
-  // papelera
+  /** Sonido grave descendente al eliminar. */
   public playDelete(): void {
-    if (!this.enabled || !this.ctx) return;
+    this.tone({ type: 'sawtooth', from: 300, to: 100, duration: 0.12, volume: 0.1 });
+  }
 
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
+  private tone(o: ToneOptions): void {
+    const ctx = this.ctx;
+    if (!this.enabled || !ctx) return;
 
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(300, this.ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.12);
+    const start = ctx.currentTime + (o.delay ?? 0);
+    const end = start + o.duration;
 
-    gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.12);
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = o.type;
+    osc.frequency.setValueAtTime(o.from, start);
+    if (o.to !== undefined) osc.frequency.exponentialRampToValueAtTime(o.to, end);
+
+    gain.gain.setValueAtTime(o.volume, start);
+    gain.gain.exponentialRampToValueAtTime(0.001, end);
 
     osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start();
-    osc.stop(this.ctx.currentTime + 0.12);
+    gain.connect(ctx.destination);
+    osc.start(start);
+    osc.stop(end);
   }
 }

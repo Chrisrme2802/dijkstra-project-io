@@ -1,44 +1,69 @@
 import sinaloaPreset from '../assets/sinaloa-graph.json';
-import type { GraphNode, GraphEdge } from '../types/dijkstra-types.js';
+import type { Edge, GraphNode } from '../types/dijkstra-types.js';
 
 export interface GraphData {
   nodes: GraphNode[];
-  edges: GraphEdge[];
+  edges: Edge[];
+}
+
+interface RawNode {
+  id?: unknown;
+  label?: unknown;
+  x?: unknown;
+  y?: unknown;
+}
+
+interface RawEdge {
+  from?: unknown;
+  to?: unknown;
+  weight?: unknown;
+}
+
+interface RawGraph {
+  nodes: RawNode[];
+  edges: RawEdge[];
 }
 
 export class GraphLoaderService {
-  
-  public static normalizeGraph(rawNodes: any[], rawEdges: any[]): GraphData {
-    const nodes: GraphNode[] = rawNodes.map((n, index) => ({
-      id: String(n.id || `node-${index}`),
-      label: String(n.label || n.id || `Nodo ${index}`),
-      x: typeof n.x === 'number' ? n.x : Math.random() * 500 + 50,
-      y: typeof n.y === 'number' ? n.y : Math.random() * 500 + 50,
-      selected: false,
-    }));
+  /** Convierte datos "crudos" (JSON) en nodos y aristas válidos para el store. */
+  public static normalizeGraph(rawNodes: RawNode[], rawEdges: RawEdge[]): GraphData {
+    const nodes: GraphNode[] = rawNodes.map((n, index) => {
+      const id = String(n.id ?? `node-${index}`);
+      return {
+        id,
+        label: String(n.label ?? id),
+        x: typeof n.x === 'number' ? n.x : Math.random() * 500 + 50,
+        y: typeof n.y === 'number' ? n.y : Math.random() * 500 + 50,
+        selected: false,
+      };
+    });
 
-    const edges: GraphEdge[] = rawEdges.map((e, index) => ({
-      id: String(e.id || `edge-${e.from}-${e.to}-${index}`), // Si la arista no trae id, se le asigna uno automático
-      from: String(e.from),
-      to: String(e.to),
-      weight: Number(e.weight) || 1,
-    }));
+    const ids = new Set(nodes.map((n) => n.id));
+    const edges: Edge[] = [];
+    for (const e of rawEdges) {
+      const from = String(e.from);
+      const to = String(e.to);
+      if (!ids.has(from) || !ids.has(to)) {
+        console.warn(`Arista ignorada: ${from} → ${to} referencia un nodo que no existe.`);
+        continue;
+      }
+      edges.push({ from, to, weight: Number(e.weight) || 1 });
+    }
 
     return { nodes, edges };
   }
 
   public static getSinaloaPreset(): GraphData {
-    return this.normalizeGraph(sinaloaPreset.nodes, sinaloaPreset.edges);
+    const preset: RawGraph = sinaloaPreset;
+    return this.normalizeGraph(preset.nodes, preset.edges);
   }
 
   public static async parseJsonFile(file: File): Promise<GraphData> {
-    const text = await file.text();
-    const parsed = JSON.parse(text);
+    const parsed = JSON.parse(await file.text());
 
     if (!Array.isArray(parsed.nodes) || !Array.isArray(parsed.edges)) {
       throw new Error('El archivo JSON debe contener las propiedades "nodes" y "edges" como arreglos.');
     }
-
     return this.normalizeGraph(parsed.nodes, parsed.edges);
   }
 }

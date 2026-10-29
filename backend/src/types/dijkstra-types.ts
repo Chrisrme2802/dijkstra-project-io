@@ -1,3 +1,5 @@
+// mantener sincronizado con el frontend
+
 export interface Node {
   id: string;
   label?: string;
@@ -16,6 +18,11 @@ export interface DijkstraRequest {
   targetNode: string;
 }
 
+export interface ActiveEdge {
+  from: string;
+  to: string;
+}
+
 export interface Step {
   stepNumber: number;
   currentNode: string;
@@ -23,6 +30,7 @@ export interface Step {
   previous: Record<string, string | null>;
   visited: string[];
   description: string;
+  activeEdge?: ActiveEdge;
 }
 
 export interface DijkstraResponse {

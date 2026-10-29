@@ -1,104 +1,110 @@
-import type { DijkstraRequest, DijkstraResponse, Step } from '../types/dijkstra-types.js';
+import type { ActiveEdge, DijkstraRequest, DijkstraResponse, Node, Edge, Step } from '../types/dijkstra-types.js';
 import { MinHeap } from '../utils/min-heap.js';
+
+type AdjacencyList = Record<string, { node: string; weight: number }[]>;
+
+const fmt = (distance: number): string => (Number.isFinite(distance) ? String(distance) : '∞');
 
 export class DijkstraService {
   public static solve(data: DijkstraRequest): DijkstraResponse {
     const { nodes, edges, startNode, targetNode } = data;
+    const adjacency = this.buildAdjacencyList(nodes, edges);
 
-    // lista de adyacencia
-    const adjacencyList: Record<string, { node: string; weight: number }[]> = {};
-    
-    nodes.forEach(node => {
-      adjacencyList[node.id] = [];
-    });
-
-    edges.forEach(edge => {
-      adjacencyList[edge.from]?.push({ node: edge.to, weight: edge.weight });
-    });
-
-    // inicializar HashMaps y conjuntos
     const distances: Record<string, number> = {};
     const previous: Record<string, string | null> = {};
+    nodes.forEach((n) => {
+      distances[n.id] = Infinity;
+      previous[n.id] = null;
+    });
+    distances[startNode] = 0;
+
     const visitedSet = new Set<string>();
     const visitedOrder: string[] = [];
     const steps: Step[] = [];
 
-    nodes.forEach(node => {
-      distances[node.id] = Infinity;
-      previous[node.id] = null;
-    });
-
-    // distancia al nodo origen siempre es 0
-    distances[startNode] = 0;
-
-    const pq = new MinHeap();
-    pq.push({ node: startNode, priority: 0 });
-
-    let stepCount = 1;
-
-    // bucle principal de Dijkstra
-    while (!pq.isEmpty()) {
-      const currentItem = pq.pop();
-      if (!currentItem) break;
-
-      // buscar el nodo no visitado con la menor distancia acumulada
-      const current = currentItem.node;
-
-      // si ya es definitivo se ignora
-      if (visitedSet.has(current)) continue;
-
-      // marcar como visitado
-      visitedSet.add(current);
-      visitedOrder.push(current);
-
-      const currentDist = distances[current] ?? Infinity;
-
-      // Guardar el estado actual en la bitácora de pasos (para el frontend)
+    const record = (currentNode: string, description: string, activeEdge?: ActiveEdge): void => {
       steps.push({
-        stepNumber: stepCount++,
-        currentNode: current,
+        stepNumber: steps.length + 1,
+        currentNode,
         distances: { ...distances },
         previous: { ...previous },
         visited: [...visitedOrder],
-        description: `Se selecciona el nodo '${current}' con distancia acumulada de ${currentDist}.`
+        description,
+        ...(activeEdge && { activeEdge }),
       });
+    };
 
-      // terminar si alcanzamos al objetivo
+    const queue = new MinHeap();
+    queue.push({ node: startNode, priority: 0 });
+
+    while (!queue.isEmpty()) {
+      const item = queue.pop();
+      if (!item) break;
+
+      const current = item.node;
+      if (visitedSet.has(current)) continue;
+
+      visitedSet.add(current);
+      visitedOrder.push(current);
+      const currentDist = distances[current] ?? Infinity;
+
+      record(current, `Se selecciona el nodo '${current}' con distancia acumulada de ${fmt(currentDist)}.`);
+
       if (current === targetNode) break;
 
-      // vecinos del nodo actual
-      const neighbors = adjacencyList[current] || [];
-      for (const neighbor of neighbors) {
-        if (visitedSet.has(neighbor.node)) continue; // ignorar permanentes
+      for (const neighbor of adjacency[current] ?? []) {
+        if (visitedSet.has(neighbor.node)) continue;
 
-        const newDist = currentDist + neighbor.weight;
-        const neighborDist = distances[neighbor.node] ?? Infinity;
+        const candidate = currentDist + neighbor.weight;
+        const known = distances[neighbor.node] ?? Infinity;
+        const improves = candidate < known;
 
-        // actualizar si encontramos un camino más corto
-        if (newDist < neighborDist) {
-          distances[neighbor.node] = newDist;
+        if (improves) {
+          distances[neighbor.node] = candidate;
           previous[neighbor.node] = current;
-          // actualizar cola de prioridad
-          pq.push({ node: neighbor.node, priority: newDist });
+          queue.push({ node: neighbor.node, priority: candidate });
         }
-      }
-    }
 
-    // backtracking para el camino optimo
-    const path: string[] = [];
-    let curr: string | null = targetNode;
-
-    if (distances[targetNode] !== Infinity && distances[targetNode] !== undefined) {
-      while (curr !== null) {
-        path.unshift(curr);
-        curr = previous[curr] ?? null;
+        const edge = `${current} ➔ ${neighbor.node}`;
+        const calc = `${fmt(currentDist)} + ${neighbor.weight} = ${fmt(candidate)}`;
+        record(
+          current,
+          improves
+            ? `Arista ${edge}: ${calc} es menor que ${fmt(known)}. Se actualiza '${neighbor.node}'.`
+            : `Arista ${edge}: ${calc} no mejora la distancia actual (${fmt(known)}).`,
+          { from: current, to: neighbor.node }
+        );
       }
     }
 
     return {
-      path,
+      path: this.reconstructPath(targetNode, distances, previous),
       totalDistance: distances[targetNode] ?? Infinity,
-      steps
+      steps,
     };
+  }
+
+  private static buildAdjacencyList(nodes: Node[], edges: Edge[]): AdjacencyList {
+    const adjacency: AdjacencyList = {};
+    nodes.forEach((n) => (adjacency[n.id] = []));
+    edges.forEach((e) => adjacency[e.from]?.push({ node: e.to, weight: e.weight }));
+    return adjacency;
+  }
+
+  // backtracking
+  private static reconstructPath(
+    target: string,
+    distances: Record<string, number>,
+    previous: Record<string, string | null>
+  ): string[] {
+    if (!Number.isFinite(distances[target] ?? Infinity)) return [];
+
+    const path: string[] = [];
+    let current: string | null = target;
+    while (current !== null) {
+      path.unshift(current);
+      current = previous[current] ?? null;
+    }
+    return path;
   }
 }
