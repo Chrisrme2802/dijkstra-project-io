@@ -3,7 +3,6 @@ import { byId } from '../utils/dom.js';
 
 export type ToastType = 'info' | 'error' | 'success';
 
-/** Avisos temporales en la esquina. Usa textContent: nunca interpreta HTML. */
 export class Toast {
   private container = byId('toast-container');
 
@@ -19,12 +18,12 @@ export class Toast {
 
     this.container.appendChild(toast);
 
-    // un frame después, para que la transición de entrada se anime
+    // un frame despues
     requestAnimationFrame(() => toast.classList.add('toast-show'));
 
     window.setTimeout(() => {
       toast.classList.remove('toast-show');
-      window.setTimeout(() => toast.remove(), 300); // duración de la transición CSS
+      window.setTimeout(() => toast.remove(), 300);
     }, TOAST_DURATION_MS);
   }
 }

@@ -4,7 +4,7 @@ export const MARKER_ARROW = 'arrowhead';
 export const MARKER_TEMP = 'temp-arrowhead';
 export const MARKER_PATH = 'path-arrowhead';
 
-/** Crea (una sola vez) las puntas de flecha que usan las aristas. */
+// puntas de flechas
 export function ensureArrowMarkers(
   svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>,
   nodeRadius: number

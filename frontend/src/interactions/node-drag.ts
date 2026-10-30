@@ -9,11 +9,6 @@ import type { TrashZone } from './trash-zone.js';
 
 type NodeDragEvent = d3.D3DragEvent<SVGGElement, GraphNode, GraphNode>;
 
-/**
- * Arrastre de nodos:
- *  - arrastrar: mueve la selección (y permite soltarla en la papelera)
- *  - Shift + arrastrar: delega en EdgeCreation
- */
 export class NodeDrag {
   private store: GraphStore;
   private actions: GraphActions;

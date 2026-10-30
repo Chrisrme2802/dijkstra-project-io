@@ -1,4 +1,3 @@
-/** Emisor de eventos tipado y mínimo. `Events` mapea nombre de evento → payload. */
 export class Emitter<Events extends object> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private handlers = new Map<keyof Events, Set<(payload: any) => void>>();

@@ -10,7 +10,6 @@ const STATUS: Record<PlaybackState, { text: string; cssClass: string }> = {
   completed: { text: 'Ruta Calculada', cssClass: 'status-completed' },
 };
 
-/** Botones Reproducir/Pausar, Anterior, Siguiente, velocidad e indicador de estado. */
 export class PlaybackControls {
   private playback: PlaybackController;
   private btnPlay = byId<HTMLButtonElement>('btn-play');

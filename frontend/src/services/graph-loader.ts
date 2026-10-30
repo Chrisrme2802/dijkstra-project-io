@@ -25,7 +25,6 @@ interface RawGraph {
 }
 
 export class GraphLoaderService {
-  /** Convierte datos "crudos" (JSON) en nodos y aristas válidos para el store. */
   public static normalizeGraph(rawNodes: RawNode[], rawEdges: RawEdge[]): GraphData {
     const nodes: GraphNode[] = rawNodes.map((n, index) => {
       const id = String(n.id ?? `node-${index}`);

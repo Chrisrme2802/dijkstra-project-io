@@ -2,30 +2,22 @@ import type { DijkstraResponse, Step } from '../types/dijkstra-types.js';
 import { Emitter } from '../utils/emitter.js';
 import { DEFAULT_SPEED_MS } from '../config.js';
 
-/**
- * idle      → no hay ejecución cargada
- * ready     → ejecución cargada, aún sin reproducir
- * playing   → avanzando automáticamente
- * paused    → detenida a mitad
- * completed → llegó al final y se mostró la ruta
- */
+ // idle       no hay ejecución cargada
+ // ready      ejecución cargada, aún sin reproducir
+ // playing    avanzando automáticamente
+ // paused     detenida a mitad
+ // completed  llego al final y se mostró la ruta
+
 export type PlaybackState = 'idle' | 'ready' | 'playing' | 'paused' | 'completed';
 
 export type PlaybackEvents = {
-  /** Se mostró un paso. `initial` es true solo al cargar la ejecución. */
   stepChanged: { step: Step; index: number; total: number; initial: boolean };
   stateChanged: PlaybackState;
-  /** La reproducción terminó: es el momento de mostrar la ruta final. */
   finished: DijkstraResponse;
-  /** Se descartó la ejecución actual. */
   cleared: void;
 };
 
-/**
- * Lógica de reproducción paso a paso. NO toca el DOM ni el renderer:
- * solo mantiene el índice y el temporizador, y emite eventos que
- * los paneles de ui/ y playback/graph-highlight escuchan.
- */
+// no modifica dom, solo emite a ui y a graph-highlight
 export class PlaybackController extends Emitter<PlaybackEvents> {
   private execution: DijkstraResponse | null = null;
   private index = -1;
@@ -33,8 +25,7 @@ export class PlaybackController extends Emitter<PlaybackEvents> {
   private speedMs = DEFAULT_SPEED_MS;
   private timer: number | null = null;
 
-  // ---------- consulta ----------
-
+  // consulta
   public getState(): PlaybackState {
     return this.state;
   }
@@ -51,8 +42,7 @@ export class PlaybackController extends Emitter<PlaybackEvents> {
     return this.getTotal() > 0;
   }
 
-  // ---------- control ----------
-
+  // control
   public load(execution: DijkstraResponse): void {
     this.clear();
     this.execution = execution;
@@ -65,7 +55,7 @@ export class PlaybackController extends Emitter<PlaybackEvents> {
 
   public play(): void {
     if (!this.hasSteps()) return;
-    if (this.index >= this.getTotal() - 1) this.goTo(0, false); // reinicia si ya había terminado
+    if (this.index >= this.getTotal() - 1) this.goTo(0, false);
 
     this.setState('playing');
     this.scheduleTick();
@@ -96,7 +86,6 @@ export class PlaybackController extends Emitter<PlaybackEvents> {
     this.setState('paused');
   }
 
-  /** Cambia la espera entre pasos (ms). Aplica desde el siguiente paso. */
   public setSpeed(ms: number): void {
     this.speedMs = ms;
   }
@@ -109,8 +98,7 @@ export class PlaybackController extends Emitter<PlaybackEvents> {
     this.emit('cleared', undefined);
   }
 
-  // ---------- internos ----------
-
+  // metodos internos
   private scheduleTick(): void {
     this.cancelTimer();
     this.timer = window.setTimeout(() => this.tick(), this.speedMs);

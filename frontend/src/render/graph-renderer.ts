@@ -5,12 +5,11 @@ import type { GraphStore } from '../state/graph-store.js';
 import type { ActiveEdge, GraphEdge, GraphNode } from '../types/dijkstra-types.js';
 import { ensureArrowMarkers, MARKER_ARROW, MARKER_PATH } from './svg-markers.js';
 
-/** Estado visual de la animación (no es parte del grafo). */
+// estado de la animacion
 export interface Highlight {
   visited: readonly string[];
   current: string | null;
   activeEdge: ActiveEdge | null;
-  /** Claves (`edgeKey`) de las aristas de la ruta final. */
   pathEdges: ReadonlySet<string>;
 }
 
@@ -24,10 +23,7 @@ const NO_HIGHLIGHT: Highlight = {
 export type NodeSelection = d3.Selection<SVGGElement, GraphNode, any, any>;
 export type NodeEnterHook = (entering: NodeSelection) => void;
 
-/**
- * Dibuja el contenido del GraphStore. No guarda datos del grafo:
- * se suscribe al store y se redibuja (como máximo una vez por frame).
- */
+// solamente dibuja el contenido del store
 export class GraphRenderer {
   private store: GraphStore;
   private svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>;
@@ -55,8 +51,7 @@ export class GraphRenderer {
     this.store.subscribe(() => this.requestRender());
   }
 
-  // ---------- acceso al SVG para las interacciones ----------
-
+  // acceso a svg
   public getSvg() {
     return this.svg;
   }
@@ -69,15 +64,12 @@ export class GraphRenderer {
     return this.edgesLayer;
   }
 
-  /** Posición del puntero en coordenadas del grafo (ya descontando zoom y pan). */
+  // posicion puntero
   public pointerInGraph(event: unknown): [number, number] {
     return d3.pointer(event, this.mainGroup.node());
   }
 
-  /**
-   * Registra una función que se ejecuta UNA vez por cada nodo nuevo.
-   * Aquí se enlazan los eventos (drag, click...), por eso ya no hace falta "re-enlazar".
-   */
+  // funcion una vez por cada nodo nuevo
   public onNodeEnter(hook: NodeEnterHook): void {
     this.nodeEnterHooks.push(hook);
   }

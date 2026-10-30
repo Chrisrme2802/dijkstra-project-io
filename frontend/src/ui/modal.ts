@@ -5,7 +5,6 @@ export interface InputOptions {
   subtitle: string;
   defaultValue?: string;
   placeholder?: string;
-  /** Devuelve un mensaje de error, o null si el valor es válido. */
   validate?: (value: string) => string | null;
 }
 
@@ -16,7 +15,7 @@ export interface ConfirmOptions {
 
 type Outcome<T> = { ok: true; value: T } | { ok: false };
 
-/** Diálogo modal reutilizable: pedir un texto o pedir confirmación. */
+// modal pedir input / confirmacion
 export class Modal {
   private overlay = byId('custom-modal');
   private title = byId('modal-title');
@@ -27,7 +26,7 @@ export class Modal {
   private btnCancel = byId<HTMLButtonElement>('modal-btn-cancel');
   private btnConfirm = byId<HTMLButtonElement>('modal-btn-confirm');
 
-  /** Pide un texto. Devuelve null si el usuario cancela. */
+  // pide input
   public showInput(options: InputOptions): Promise<string | null> {
     const input = this.input;
     if (!input) return Promise.resolve(null);
@@ -52,7 +51,7 @@ export class Modal {
     });
   }
 
-  /** Pide confirmación. Devuelve false si el usuario cancela. */
+  // pide confirmacion
   public showConfirm(options: ConfirmOptions): Promise<boolean> {
     return this.present<boolean>({
       title: options.title,
@@ -100,7 +99,9 @@ export class Modal {
         const outcome = config.confirm();
         if (outcome.ok) close(outcome.value);
       };
+
       const onCancel = () => close(config.cancelValue);
+      
       const onKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Enter') {
           e.preventDefault();

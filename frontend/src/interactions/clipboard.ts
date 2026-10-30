@@ -4,7 +4,6 @@ import type { SoundEffects } from '../services/sound-effects.js';
 import type { Edge, GraphNode } from '../types/dijkstra-types.js';
 import type { Toast } from '../ui/toast.js';
 
-/** Copiar / pegar la selección con Ctrl/Cmd + C / V. */
 export class Clipboard {
   private store: GraphStore;
   private toast: Toast;
@@ -46,7 +45,7 @@ export class Clipboard {
 
     const ids = new Set(selected.map((n) => n.id));
     this.nodes = selected.map((n) => ({ id: n.id, label: n.label, x: n.x, y: n.y }));
-    // solo aristas cuyos dos extremos están seleccionados
+    // solo aristas dos extremos
     this.edges = this.store
       .getEdges()
       .filter((e) => ids.has(e.from) && ids.has(e.to))
@@ -86,7 +85,7 @@ export class Clipboard {
     this.toast.show(`Pegados ${newNodes.length} nodos`, 'success');
   }
 
-  /** A → A_1, A_2... (si se pega algo que ya era una copia, A_1 → A_2 y no A_1_1). */
+  // A → A_1, A_2... (si se pega algo que ya era una copia, A_1 → A_2 y no A_1_1)
   private uniqueId(baseId: string, taken: Set<string>): string {
     const base = baseId.replace(/_\d+$/, '');
     let counter = 1;

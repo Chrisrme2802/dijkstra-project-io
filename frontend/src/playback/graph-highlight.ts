@@ -2,7 +2,7 @@ import type { GraphRenderer } from '../render/graph-renderer.js';
 import { edgeKey } from '../state/graph-store.js';
 import type { PlaybackController } from './playback-controller.js';
 
-/** Traduce los eventos de reproducción en resaltado visual sobre el grafo. */
+// traduce playback-controller a visual
 export class GraphHighlight {
   constructor(renderer: GraphRenderer, playback: PlaybackController) {
     playback.on('stepChanged', ({ step }) => {

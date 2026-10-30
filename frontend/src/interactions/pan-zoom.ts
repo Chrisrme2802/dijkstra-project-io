@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import { ZOOM_EXTENT } from '../config.js';
 import type { GraphRenderer } from '../render/graph-renderer.js';
 
-/** Zoom con la rueda y desplazamiento del lienzo con Alt + arrastrar. */
+// zoom y pan
 export class PanZoom {
   private altPressed = false;
 
@@ -21,7 +21,7 @@ export class PanZoom {
     this.bindAltKey(svg);
   }
 
-  /** ¿Este evento es un gesto de "mover el lienzo"? (Alt presionado) */
+  // evento es pan
   public isPanGesture(event: { altKey?: boolean }): boolean {
     return Boolean(event.altKey) || this.altPressed;
   }
@@ -29,7 +29,7 @@ export class PanZoom {
   private bindAltKey(svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>): void {
     window.addEventListener('keydown', (e) => {
       if (e.key !== 'Alt') return;
-      e.preventDefault(); // evita que Alt abra la barra de menús del navegador
+      e.preventDefault();
       if (!this.altPressed) {
         this.altPressed = true;
         svg.classed('cursor-grab', true);

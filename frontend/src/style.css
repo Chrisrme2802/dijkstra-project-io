@@ -1,11 +1,6 @@
 @import "tailwindcss";
 
-/* =====================================================================
-   1. TOKENS DE DISEÑO
-   Todos los colores del grafo salen de aquí. Para cambiar la paleta,
-   edita solo este bloque. (`static` fuerza a emitir las variables
-   aunque Tailwind no detecte su uso.)
-   ===================================================================== */
+/* colores (static fuerza a emitir la variable) */
 @theme static {
   --color-brand-primary: #6366f1;
   --color-brand-accent: #818cf8;
@@ -24,12 +19,7 @@
   --color-state-danger: #ef4444;
 }
 
-/* =====================================================================
-   2. NODOS
-   Estados posibles (clases que pone render/graph-renderer.ts):
-   node-default · node-start · node-target · node-processing ·
-   node-visited · node-selected (se suma a cualquiera de los anteriores)
-   ===================================================================== */
+/* nodos */
 .node-label {
   @apply fill-slate-200 text-xs font-bold pointer-events-none;
 }
@@ -72,18 +62,14 @@
   filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-state-processing) 80%, transparent));
 }
 
-/* La selección debe ganar a cualquier estado: mayor especificidad, sin !important */
+/* seleccion debe de ganar a cualquier estado */
 .node-group.node-selected circle {
   stroke: var(--color-state-active);
   stroke-width: 3.5px;
   filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-state-active) 90%, transparent));
 }
 
-/* =====================================================================
-   3. ARISTAS
-   El orden importa: :hover primero; los estados después, para que
-   "activa" y "ruta" ganen sobre el hover.
-   ===================================================================== */
+/* edges */
 .edge-line {
   stroke: var(--color-graph-stroke);
   stroke-width: 2px;
@@ -119,7 +105,6 @@
   user-select: none;
 }
 
-/* Línea temporal al crear una arista con Shift + arrastrar */
 .temp-edge-line {
   stroke: var(--color-brand-accent);
   stroke-width: 2px;
@@ -131,9 +116,7 @@
   fill: var(--color-brand-accent);
 }
 
-/* =====================================================================
-   4. SELECCIÓN Y PAPELERA
-   ===================================================================== */
+/* seleccion y papelera */
 .selection-box {
   fill: color-mix(in srgb, var(--color-brand-primary) 15%, transparent);
   stroke: var(--color-brand-accent);
@@ -157,9 +140,7 @@
   filter: drop-shadow(0 0 12px color-mix(in srgb, var(--color-state-danger) 60%, transparent));
 }
 
-/* =====================================================================
-   5. MODAL (ui/modal.ts)
-   ===================================================================== */
+/* modal */
 .modal-overlay {
   @apply fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200;
 }
@@ -180,9 +161,7 @@
   @apply w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono transition;
 }
 
-/* =====================================================================
-   6. TOASTS (ui/toast.ts)
-   ===================================================================== */
+/* toast */
 #toast-container {
   @apply fixed top-20 right-6 z-50 flex flex-col gap-2 pointer-events-none;
 }
@@ -207,9 +186,7 @@
   @apply bg-emerald-950/90 border-emerald-500/40 text-emerald-200 shadow-emerald-500/10;
 }
 
-/* =====================================================================
-   7. INDICADOR DE ESTADO (ui/playback-controls.ts)
-   ===================================================================== */
+/* indicador de estado */
 .status-editing,
 .status-running,
 .status-paused,
@@ -230,9 +207,7 @@
   @apply bg-amber-500/10 text-amber-400 border-amber-500/20;
 }
 
-/* =====================================================================
-   8. TABLA DE DISTANCIAS (ui/distance-table.ts)
-   ===================================================================== */
+/* distance table */
 .table-row-base {
   @apply transition-colors duration-200 hover:bg-slate-800/50;
 }

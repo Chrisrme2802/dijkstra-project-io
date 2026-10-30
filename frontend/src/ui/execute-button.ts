@@ -5,7 +5,6 @@ import type { DijkstraRequest } from '../types/dijkstra-types.js';
 import { byId } from '../utils/dom.js';
 import type { Toast } from './toast.js';
 
-/** Botón "Calcular Ruta": valida, llama a la API y arranca la reproducción. */
 export class ExecuteButton {
   private store: GraphStore;
   private playback: PlaybackController;
@@ -54,7 +53,7 @@ export class ExecuteButton {
 
   private setBusy(busy: boolean): void {
     if (!this.button) return;
-    this.button.disabled = busy; // evita peticiones repetidas
+    this.button.disabled = busy;
     this.button.textContent = busy ? 'Calculando...' : 'Calcular Ruta';
     this.button.classList.toggle('opacity-50', busy);
     this.button.classList.toggle('cursor-not-allowed', busy);

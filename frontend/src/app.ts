@@ -21,22 +21,18 @@ import { PresetControls } from './ui/preset-controls.js';
 import { StepPanel } from './ui/step-panel.js';
 import { Toast } from './ui/toast.js';
 
-/**
- * Ensambla la aplicación. Aquí SOLO se crean los módulos y se conectan entre sí;
- * la lógica vive en cada módulo. El orden de las secciones sigue el flujo de datos:
- *   estado → render → reproducción → interacciones → controles.
- */
+// ensamblar aplicacion
 export function createApp(): void {
-  // 1. Servicios y UI global
+  // global
   const sounds = new SoundEffects();
   const toast = new Toast();
   const modal = new Modal();
 
-  // 2. Estado y dibujo
+  // state y render
   const store = new GraphStore();
   const renderer = new GraphRenderer('graph-canvas', store);
 
-  // 3. Reproducción del algoritmo y sus "vistas"
+  // algoritmo
   const playback = new PlaybackController();
   new GraphHighlight(renderer, playback);
   new DistanceTable(store, playback);
@@ -50,7 +46,7 @@ export function createApp(): void {
     if (path.length > 0) sounds.playSuccess();
   });
 
-  // 4. Interacciones sobre el lienzo
+  // interactions
   const actions = new GraphActions(store, modal, toast, sounds);
   const panZoom = new PanZoom(renderer);
   const trash = new TrashZone();
@@ -64,7 +60,7 @@ export function createApp(): void {
   new MarkerDrag(renderer, store);
   new Clipboard(store, toast, sounds);
 
-  // 5. Controles de la interfaz
+  // controles
   new PresetControls(store, playback, toast, sounds);
   new ExecuteButton(store, playback, toast);
 }

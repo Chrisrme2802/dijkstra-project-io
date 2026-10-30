@@ -1,6 +1,5 @@
 import { byId } from '../utils/dom.js';
 
-/** Papelera visual: aparece al arrastrar nodos y detecta si se sueltan sobre ella. */
 export class TrashZone {
   private element = byId('trash-zone');
 

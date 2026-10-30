@@ -3,7 +3,6 @@ import type { GraphStore } from '../state/graph-store.js';
 import type { Step } from '../types/dijkstra-types.js';
 import { byId } from '../utils/dom.js';
 
-/** Tabla "Nodo / Distancia / Previo" del panel izquierdo. Se construye con DOM, no con innerHTML. */
 export class DistanceTable {
   private store: GraphStore;
   private body = byId('node-distance-table-body');
@@ -34,7 +33,6 @@ export class DistanceTable {
         'table-row-base' +
         (isCurrent ? ' table-row-current' : isVisited ? ' table-row-visited' : '');
 
-      // Nodo (+ punto pulsante si es el actual)
       const nodeCell = document.createElement('td');
       nodeCell.className = 'table-cell-node';
       const inner = document.createElement('div');
@@ -49,12 +47,12 @@ export class DistanceTable {
       }
       nodeCell.appendChild(inner);
 
-      // Distancia
+      // distancia
       const distCell = document.createElement('td');
       distCell.className = `table-cell-dist ${unreached ? 'table-dist-infinity' : 'table-dist-value'}`;
       distCell.textContent = unreached ? '∞' : String(distance);
 
-      // Previo
+      // previo
       const prevCell = document.createElement('td');
       prevCell.className = 'table-cell-prev';
       prevCell.textContent = step.previous[node.id] ?? '-';

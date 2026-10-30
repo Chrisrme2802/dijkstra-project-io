@@ -5,7 +5,6 @@ import type { GraphStore } from '../state/graph-store.js';
 import type { GraphNode } from '../types/dijkstra-types.js';
 import type { GraphActions } from './graph-actions.js';
 
-/** Crear aristas: Shift + arrastrar de un nodo a otro. Dibuja una línea temporal. */
 export class EdgeCreation {
   private renderer: GraphRenderer;
   private store: GraphStore;

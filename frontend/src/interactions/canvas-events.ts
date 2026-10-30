@@ -2,7 +2,6 @@ import type { GraphRenderer } from '../render/graph-renderer.js';
 import type { GraphActions } from './graph-actions.js';
 import type { PanZoom } from './pan-zoom.js';
 
-/** Eventos sobre el fondo del lienzo: doble clic para crear un nodo. */
 export class CanvasEvents {
   constructor(renderer: GraphRenderer, actions: GraphActions, panZoom: PanZoom) {
     const svg = renderer.getSvg();

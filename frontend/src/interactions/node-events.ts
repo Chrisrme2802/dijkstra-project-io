@@ -4,14 +4,6 @@ import type { GraphActions } from './graph-actions.js';
 import type { NodeDrag } from './node-drag.js';
 import type { PanZoom } from './pan-zoom.js';
 
-/**
- * Eventos de cada nodo. Se enlazan UNA vez, cuando el renderer crea el nodo
- * (ver renderer.onNodeEnter), por lo que no hay que "re-enlazar" nunca.
- *
- *  - clic: selecciona (Ctrl/Cmd suma) y, sin Shift, abre el diálogo de renombrar
- *  - clic derecho: eliminar (con confirmación)
- *  - arrastrar: ver NodeDrag
- */
 export class NodeEvents {
   private store: GraphStore;
   private actions: GraphActions;

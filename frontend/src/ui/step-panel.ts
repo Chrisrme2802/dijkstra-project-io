@@ -4,7 +4,6 @@ import { byId } from '../utils/dom.js';
 
 const IDLE_DESCRIPTION = 'Crea un grafo y presiona "Calcular Ruta" para iniciar la simulación.';
 
-/** Panel derecho: contador de pasos, descripción y resumen de la ruta final. */
 export class StepPanel {
   private counter = byId('step-counter');
   private description = byId('step-description');

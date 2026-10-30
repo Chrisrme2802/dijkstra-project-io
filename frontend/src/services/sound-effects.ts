@@ -1,23 +1,20 @@
 interface ToneOptions {
   type: OscillatorType;
-  /** Frecuencia inicial (Hz). */
+  // inicial
   from: number;
-  /** Frecuencia final (Hz); si se omite, la frecuencia es constante. */
+  // final
   to?: number;
-  /** Duración en segundos. */
   duration: number;
   volume: number;
-  /** Retraso de inicio en segundos. */
   delay?: number;
 }
 
-/** Efectos de sonido sintetizados con la Web Audio API (no se usan archivos de audio). */
 export class SoundEffects {
   private ctx: AudioContext | null = null;
   private enabled = true;
 
   constructor() {
-    // Los navegadores exigen un gesto del usuario para iniciar el audio.
+    // gesto usuario
     const init = () => {
       if (!this.ctx) {
         const Ctor =
@@ -39,24 +36,24 @@ export class SoundEffects {
     return this.enabled;
   }
 
-  /** Pop suave (crear, renombrar, copiar). */
+  // suave
   public playPop(): void {
     this.tone({ type: 'sine', from: 440, to: 880, duration: 0.08, volume: 0.15 });
   }
 
-  /** Tick corto en cada paso del algoritmo. */
+  // tick
   public playStep(): void {
     this.tone({ type: 'triangle', from: 587.33, duration: 0.05, volume: 0.08 });
   }
 
-  /** Arpegio ascendente C5 – E5 – G5 – C6. */
+  // C5 – E5 – G5 – C6
   public playSuccess(): void {
     [523.25, 659.25, 783.99, 1046.5].forEach((from, i) =>
       this.tone({ type: 'sine', from, duration: 0.3, volume: 0.12, delay: i * 0.08 })
     );
   }
 
-  /** Sonido grave descendente al eliminar. */
+  // grave
   public playDelete(): void {
     this.tone({ type: 'sawtooth', from: 300, to: 100, duration: 0.12, volume: 0.1 });
   }

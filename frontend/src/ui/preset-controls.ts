@@ -6,7 +6,6 @@ import { byId } from '../utils/dom.js';
 import type { Toast } from './toast.js';
 import type { GraphData } from '../services/graph-loader.js';
 
-/** Botones "Mapa Sinaloa" y "Custom..." (subir un JSON con el grafo). */
 export class PresetControls {
   private store: GraphStore;
   private playback: PlaybackController;
@@ -29,7 +28,7 @@ export class PresetControls {
   }
 
   private apply(data: GraphData): void {
-    this.playback.clear(); // la ejecución anterior ya no corresponde a este grafo
+    this.playback.clear();
     this.store.load(data.nodes, data.edges);
   }
 
@@ -53,7 +52,7 @@ export class PresetControls {
     } catch (error) {
       this.toast.show(error instanceof Error ? error.message : 'Error al procesar el archivo JSON', 'error');
     } finally {
-      input.value = ''; // permite volver a elegir el mismo archivo
+      input.value = '';
     }
   }
 }

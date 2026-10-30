@@ -3,7 +3,7 @@ import type { GraphRenderer } from '../render/graph-renderer.js';
 import type { GraphStore } from '../state/graph-store.js';
 import type { PanZoom } from './pan-zoom.js';
 
-/** Selección múltiple arrastrando un rectángulo sobre el fondo. Ctrl/Cmd suma a la selección. */
+// seleccion con rectangulo
 export class SelectionBox {
   private renderer: GraphRenderer;
   private store: GraphStore;

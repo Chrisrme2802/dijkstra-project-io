@@ -4,11 +4,7 @@ import type { GraphNode } from '../types/dijkstra-types.js';
 import type { Modal } from '../ui/modal.js';
 import type { Toast } from '../ui/toast.js';
 
-/**
- * Casos de uso del editor: cada método combina "preguntar al usuario" +
- * "modificar el store" + "sonido y aviso". Los eventos de bajo nivel
- * (drag, click...) solo llaman a estos métodos.
- */
+// accion luego store luego sonido y notificacion
 export class GraphActions {
   private store: GraphStore;
   private modal: Modal;
@@ -94,7 +90,6 @@ export class GraphActions {
     this.sounds.playPop();
   }
 
-  /** Primer nombre libre con el formato N1, N2, N3... */
   private nextFreeName(): string {
     let n = this.store.getNodes().length + 1;
     while (this.store.hasNode(`N${n}`)) n++;

@@ -4,14 +4,12 @@ import type { GraphRenderer } from '../render/graph-renderer.js';
 import type { GraphStore } from '../state/graph-store.js';
 import { byId } from '../utils/dom.js';
 
-const PREVIEW_BASE =
-  'fixed pointer-events-none z-50 rounded-full px-3 py-1 text-xs font-bold shadow-lg border -translate-x-1/2 -translate-y-1/2';
+const PREVIEW_BASE = 'fixed pointer-events-none z-50 rounded-full px-3 py-1 text-xs font-bold shadow-lg border -translate-x-1/2 -translate-y-1/2';
 const PREVIEW_START = `${PREVIEW_BASE} bg-amber-500/90 border-amber-400 text-amber-950`;
 const PREVIEW_TARGET = `${PREVIEW_BASE} bg-emerald-500/90 border-emerald-400 text-emerald-950`;
 
 type MarkerType = 'start' | 'target';
 
-/** Arrastrar las insignias "Nodo Inicio" / "Nodo Meta" del panel sobre un nodo del lienzo. */
 export class MarkerDrag {
   private renderer: GraphRenderer;
   private store: GraphStore;

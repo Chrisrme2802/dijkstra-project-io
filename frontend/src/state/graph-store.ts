@@ -1,16 +1,12 @@
 import { NODE_RADIUS } from '../config.js';
 import type { Edge, GraphEdge, GraphNode } from '../types/dijkstra-types.js';
 
-/** Clave única de una arista dirigida. También se usa para marcar la ruta final. */
+// clave de arista dirigida
 export const edgeKey = (from: string, to: string): string => `${from}\u2192${to}`;
 
 type Listener = () => void;
 
-/**
- * ÚNICA fuente de verdad del grafo: nodos, aristas, selección, inicio y meta.
- * Nadie más debe mutar estos datos; todo cambio pasa por un método de aquí,
- * que avisa a los suscriptores (el renderer se redibuja solo).
- */
+// mutacion de grafos
 export class GraphStore {
   private nodes: GraphNode[] = [];
   private edges: GraphEdge[] = [];
@@ -18,8 +14,7 @@ export class GraphStore {
   private targetNodeId: string | null = null;
   private listeners = new Set<Listener>();
 
-  // ---------- suscripción ----------
-
+  // subscripcion
   public subscribe(listener: Listener): () => void {
     this.listeners.add(listener);
     return () => {
@@ -31,8 +26,7 @@ export class GraphStore {
     this.listeners.forEach((listener) => listener());
   }
 
-  // ---------- lectura ----------
-
+  // metodos de acceso
   public getNodes(): readonly GraphNode[] {
     return this.nodes;
   }
@@ -57,15 +51,13 @@ export class GraphStore {
     return this.nodes.some((n) => n.id === id);
   }
 
-  /** Nodo cuyo círculo (más `tolerance` px) contiene el punto, en coordenadas del grafo. */
   public findNodeAt(x: number, y: number, tolerance = 0): GraphNode | undefined {
     const radius = NODE_RADIUS + tolerance;
     return this.nodes.find((n) => Math.hypot(x - n.x, y - n.y) <= radius);
   }
 
-  // ---------- escritura: grafo ----------
-
-  /** Reemplaza todo el grafo. Las aristas con extremos inexistentes se descartan. */
+  // metodos de escritura
+  // reemplaza todo el grafo a partir de nodos y edges (importacion)
   public load(nodes: readonly GraphNode[], edges: readonly Edge[]): void {
     this.nodes = nodes.map((n) => ({ ...n, selected: false }));
     this.edges = [];
@@ -84,7 +76,7 @@ export class GraphStore {
     this.notify();
   }
 
-  /** Añade nodos y aristas ya con ids únicos (pegado). Los nuevos quedan seleccionados. */
+  // nodos de copy paste
   public addSubgraph(nodes: readonly GraphNode[], edges: readonly Edge[]): void {
     this.nodes.forEach((n) => (n.selected = false));
     nodes.forEach((n) => this.nodes.push({ ...n, selected: true }));
@@ -101,12 +93,12 @@ export class GraphStore {
     this.notify();
   }
 
-  /** Renombra un nodo y mantiene coherentes aristas, inicio y meta. */
   public renameNode(oldId: string, newId: string): boolean {
     if (oldId === newId || this.hasNode(newId)) return false;
     const node = this.nodes.find((n) => n.id === oldId);
     if (!node) return false;
 
+    // actualiza la direcciond de edges relacionados
     for (const e of this.edges) {
       if (e.from === oldId) e.from = newId;
       if (e.to === oldId) e.to = newId;
@@ -120,7 +112,6 @@ export class GraphStore {
     return true;
   }
 
-  /** Crea la arista o actualiza su peso si ya existía. */
   public setEdge(from: string, to: string, weight: number): void {
     this.upsertEdge(from, to, weight);
     this.notify();
@@ -136,8 +127,7 @@ export class GraphStore {
     this.notify();
   }
 
-  // ---------- escritura: posición y selección ----------
-
+  // modificacion
   public moveSelected(dx: number, dy: number): void {
     for (const n of this.nodes) {
       if (n.selected) {
@@ -169,8 +159,7 @@ export class GraphStore {
     this.notify();
   }
 
-  // ---------- internos ----------
-
+  // metodo privado
   private upsertEdge(from: string, to: string, weight: number): void {
     const id = edgeKey(from, to);
     const existing = this.edges.find((e) => e.id === id);
